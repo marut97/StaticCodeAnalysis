@@ -1,0 +1,130 @@
+﻿<UserControl x:Class="StaticCodeAnalysisClient.Views.ToolRunPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:StaticCodeAnalysisClient.Views"
+             xmlns:models="clr-namespace:StaticCodeAnalysisClient.Models"
+             mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Styles/ToggleModule.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid Height="Auto" Width="Auto" ShowGridLines="True" Background="Gray">
+        <Grid.ColumnDefinitions >
+            <ColumnDefinition Width="300" />
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="300" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Stretch">
+
+            <TextBlock Margin="30,0,0,0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment ="Center" 
+                       FontSize="20" FontStyle="Italic" ><Run Text="Repository Path"/></TextBlock>
+
+            <TextBox x:Name="gitRepoLink" Height="30" Width="Auto" Margin="0,0,0,10" VerticalContentAlignment="Center" 
+                     Text="{Binding ToolRunModel.RepoPath}"/>
+
+            <TextBlock Margin="30,0,0,0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                       FontSize="20" FontStyle="Italic"><Run Text="Branch Name"/></TextBlock>
+
+            <TextBox x:Name="gitRepoBranch" Height="30" Width="Auto" Margin="0,0,0,10" VerticalContentAlignment="Center"
+                     Text="{Binding ToolRunModel.Branch}" IsEnabled="{Binding ElementName=RepositoryType, Path=IsChecked}"/>
+
+            <TextBlock Margin="10,0,0,0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                       FontSize="20" FontStyle="Italic"><Run Text="Tools"/></TextBlock>
+
+            <ComboBox HorizontalAlignment="Center" Width="200" ItemsSource="{Binding ToolRunModel.AllTools}" Margin="30,0,0,0" 
+                      DisplayMemberPath ="Value" SelectedValuePath="Key" SelectedValue="{Binding ToolRunModel.SelectedTool, Mode=TwoWay}" />
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+
+                <TextBlock Width="Auto" Height="Auto" FontSize="20" VerticalAlignment="Center" FontStyle="Italic" 
+                           FontWeight="Bold"><Run Text="Local Folder"/></TextBlock>
+
+                <ToggleButton Width="70" Name="RepositoryType" Height="35" Margin="10"
+                              Style="{StaticResource SwitchTypeToggleButton}" IsChecked="{Binding ToolRunModel.RepoType}"/>
+
+                <TextBlock Width="Auto" Height="Auto" FontSize="20" VerticalAlignment="Center" FontStyle="Italic" 
+                           FontWeight="Bold"><Run Text="Github"/></TextBlock>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+
+                <TextBlock Width="Auto" Height="Auto" FontSize="20" VerticalAlignment="Center" FontStyle="Italic" 
+                           FontWeight="Bold"><Run Text="Relative"/></TextBlock>
+
+                <ToggleButton Name ="GatingType" Width="70" Height="35" Margin="10" Style="{StaticResource SwitchTypeToggleButton}" 
+                              HorizontalAlignment="Center" IsChecked="{Binding ToolRunModel.GateType}"/>
+
+                <TextBlock Width="Auto" Height="Auto" FontSize="20" VerticalAlignment="Center" FontStyle="Italic" 
+                           FontWeight="Bold"><Run Text="Absolute Gate"/></TextBlock>
+            </StackPanel>
+
+            <TextBlock Margin="10,0,0,0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"  
+                       FontSize="20" FontStyle="Italic"><Run Text="Gating Threshold"/></TextBlock>
+
+            <TextBox x:Name="threshold" Height="30" Width="Auto" Margin="0,0,0,10" VerticalContentAlignment="Center" 
+                     Text="{Binding ToolRunModel.GateThreshold}" IsEnabled="{Binding ElementName=GatingType, Path=IsChecked}" />
+
+            <Button Width="200" Height="50" FontSize="15" FontWeight="ExtraBold" Command="{Binding RunTool}">Run Tool</Button>
+
+            <Button Width="200" Height="50" FontSize="15" FontWeight="ExtraBold" Command="{Binding TestTool}">Test Tool</Button>
+
+            <Button Width="100" Height="30" FontSize="15" FontWeight="Bold" HorizontalAlignment="Right" 
+                    VerticalAlignment="Bottom" Command="{Binding Logout}">Logout</Button>
+
+        </StackPanel>
+
+        <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+            <Image Source="{Binding ToolStatusModel.StatusImage}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="100" Width="100"/>
+
+            <TextBlock Width="Auto" Height="Auto" FontSize="20" VerticalAlignment="Center" FontStyle="Italic" FontWeight="Bold" 
+                       HorizontalAlignment="Center" Text="{Binding ToolStatusModel.StatusMessage}"/>
+
+        </StackPanel>
+
+        <StackPanel Grid.Column="2" CanVerticallyScroll="True" CanHorizontallyScroll="False">
+
+            <TextBlock  FontWeight="Bold" FontStyle="Normal" FontSize="25" HorizontalAlignment="Center"><Run Text="Recents"/></TextBlock>
+
+            <ListBox x:Name ="Recents" ItemsSource="{Binding UserRepos}" SelectionMode="Single" SelectedItem="{Binding SelectedRepository}" >
+
+                <ListBox.ItemTemplate>
+
+                    <DataTemplate DataType="models:RepositoryDetailsModel">
+
+                        <StackPanel Background="{Binding Path=Colour}" Orientation="Vertical" HorizontalAlignment="Stretch" Width="300">
+
+                            <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
+
+                                <TextBlock FontSize="20" FontWeight="Bold" TextWrapping="Wrap"><Run Text="{Binding Repository}" /></TextBlock>
+
+                                <TextBlock FontSize="16" FontWeight="Bold" Margin="5,0,0,0" TextWrapping="Wrap">Errors:</TextBlock>
+
+                                <TextBlock FontSize="20" FontWeight="Bold" Text="{Binding Errors}" TextWrapping="Wrap"></TextBlock>
+
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal">
+
+                                <TextBlock FontSize="13" Text="{Binding Branch}" Margin="5,0,0,0" TextWrapping="Wrap"></TextBlock>
+
+                                <TextBlock FontSize="13" Text="{Binding Tool}" Margin="5,0,0,0" TextWrapping="Wrap"></TextBlock>
+                                
+                                <TextBlock FontSize="13" Text="{Binding DateTime}" Margin="5,0,0,0" TextWrapping="Wrap"></TextBlock>
+
+                            </StackPanel>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </StackPanel>
+    </Grid>
+</UserControl>
